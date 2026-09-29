@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ikaro Cauê — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Libre+Franklin:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#DDE2E0; --ink:#16241F; --sub:#4B584F; --accent:#B9852B; --card:#EDF0EE; --line:#C4CBC6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Libre Franklin',sans-serif}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;margin:0}
+  a{color:var(--accent)}
+  header{display:flex;justify-content:space-between;align-items:center;padding:32px 6vw;flex-wrap:wrap;gap:16px}
+  .brand{font-weight:700;font-size:20px}
+  nav a{text-decoration:none;color:var(--ink);font-weight:500;font-size:15px;margin-left:28px}
+  .hero{padding:40px 6vw 80px;max-width:760px}
+  .hero h1{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1}
+  .hero p{font-size:18px;color:var(--sub);line-height:1.6;margin-top:20px}
+  .tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+  .tag{border:1px solid var(--line);padding:6px 14px;border-radius:20px;font-size:13px;color:var(--sub)}
+  section{padding:20px 6vw 80px}
+  .section-title{font-size:26px;font-weight:700;margin-bottom:28px}
+  .slider-wrap{position:relative}
+  .slider{display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 6px 16px;scrollbar-width:none}
+  .slider::-webkit-scrollbar{display:none}
+  .card{scroll-snap-align:start;flex:0 0 min(420px,80vw);background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden;display:flex;flex-direction:column;
+        transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease}
+  .card:hover{transform:translateY(-8px);box-shadow:0 18px 30px -18px rgba(22,36,31,0.35);border-color:var(--ink)}
+  .banner{height:150px;display:flex;align-items:flex-end;padding:18px;position:relative;overflow:hidden}
+  .banner-label{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:#fff;letter-spacing:0.3px;position:relative;z-index:1}
+  .banner::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 15%, rgba(255,255,255,0.18), transparent 55%);
+                  transition:transform .35s ease}
+  .card:hover .banner::after{transform:scale(1.15)}
+  .banner-ceramics{background:linear-gradient(135deg,#A8452E,#7A3120)}
+  .banner-aria{background:linear-gradient(135deg,#2B5F6F,#1D4552)}
+  .banner-rpg{background:linear-gradient(135deg,#5B4A8A,#3E3260)}
+  .banner-meraki{background:linear-gradient(135deg,#3E6B4E,#294A37)}
+  .card-body{padding:22px;display:flex;flex-direction:column;gap:12px}
+  .card-body h3{font-size:19px}
+  .card-body p{margin:0;font-size:14.5px;color:var(--sub);line-height:1.55}
+  .ext{display:flex;gap:8px;flex-wrap:wrap}
+  .ext span{font-size:11.5px;font-weight:600;background:var(--bg);border:1px solid var(--line);padding:4px 10px;border-radius:4px;color:var(--ink)}
+  .card-body a,.card-body .view-btn{color:var(--accent);font-size:14px;font-weight:600;text-decoration:none;margin-top:4px;display:inline-flex;align-items:center;gap:6px}
+  .card-body a::after,.card-body .view-btn::after{content:"→";transition:transform .2s ease}
+  .card:hover .card-body a::after,.card:hover .card-body .view-btn::after{transform:translateX(4px)}
+  .slider-controls{display:flex;gap:12px;margin-top:12px}
+  .slider-controls button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:16px;color:var(--ink);transition:background .2s ease,color .2s ease,border-color .2s ease}
+  .slider-controls button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  footer{padding:40px 6vw 60px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--sub)}
+  @media(max-width:640px){nav{width:100%}nav a{margin-left:0;margin-right:20px}}
+
+  .view-btn{background:none;border:none;padding:0;font-family:inherit;cursor:pointer}
+
+  .overlay{position:fixed;inset:0;background:rgba(22,36,31,0.55);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
+  .overlay.open{display:flex}
+  .modal{background:var(--card);max-width:560px;width:100%;max-height:85vh;overflow-y:auto;border-radius:4px;position:relative;
+         transform:translateY(16px);opacity:0;transition:transform .25s ease,opacity .25s ease}
+  .overlay.open .modal{transform:translateY(0);opacity:1}
+  .modal-banner{height:120px}
+  .modal-body{padding:30px}
+  .modal-body h2{font-size:24px;margin-bottom:6px}
+  .modal-kicker{font-size:13px;color:var(--accent);font-weight:600;margin-bottom:10px}
+  .modal-body p{font-size:15px;line-height:1.65;color:var(--sub);margin:0 0 16px}
+  .modal-body h4{font-family:'Space Grotesk',sans-serif;font-size:14px;margin:0 0 10px}
+  .modal-body ul{margin:0 0 20px;padding-left:20px;font-size:14.5px;color:var(--sub);line-height:1.6}
+  .modal-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:16px;color:var(--ink);z-index:2}
+  .modal-close:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .modal-link{font-size:14px;font-weight:600;text-decoration:none;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Ikaro Cauê</div>
+  <nav>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+    <a href="https://github.com/ikaro321santos-sys" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h1>Systems student who learns by building — from chatbots to interfaces.</h1>
+  <p>I'm Ikaro, a Systems Analysis and Development student at SENAC-PE. I like to learn by doing: personal projects in Python, C#, and front-end that help me understand logic, automation, and interface design in practice.</p>
+  <div class="tags">
+    <span class="tag">Python</span>
+    <span class="tag">C#</span>
+    <span class="tag">JavaScript</span>
+    <span class="tag">HTML / CSS</span>
+  </div>
+</div>
+
+<section id="projects">
+  <div class="section-title">Projects</div>
+  <div class="slider-wrap">
+    <div class="slider" id="slider">
+
+      <div class="card">
+        <div class="banner banner-ceramics"><div class="banner-label">Landing Page</div></div>
+        <div class="card-body">
+          <h3>Barro & Sol</h3>
+          <p>Concept landing page for a handmade ceramics store inspired by the São Francisco River valley. Terracotta/indigo palette, serif display type, and a full e-commerce page structure.</p>
+          <div class="ext"><span>HTML</span><span>CSS</span><span>UI/UX</span></div>
+          <button class="view-btn" data-project="ceramics">View project</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="banner banner-aria"><div class="banner-label">AI Chatbot</div></div>
+        <div class="card-body">
+          <h3>ARIA</h3>
+          <p>An AI assistant built as a chatbot in Python, focused on automating responses and supporting my day-to-day coursework routines in the ADS program.</p>
+          <div class="ext"><span>Python</span><span>Automation</span><span>NLP basics</span></div>
+          <button class="view-btn" data-project="aria">View project</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="banner banner-rpg"><div class="banner-label">Console App</div></div>
+        <div class="card-body">
+          <h3>Console RPG</h3>
+          <p>A terminal-based RPG application with game rules, interaction mechanics, and state management, built entirely in C#.</p>
+          <div class="ext"><span>C#</span><span>Console</span><span>Game Logic</span></div>
+          <button class="view-btn" data-project="rpg">View project</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="banner banner-meraki"><div class="banner-label">Web Prototype</div></div>
+        <div class="card-body">
+          <h3>Meraki RPG</h3>
+          <p>A functional web interface prototype for an RPG platform, featuring a dice-rolling system and dynamic character sheets built in JavaScript.</p>
+          <div class="ext"><span>HTML</span><span>JavaScript</span><span>CSS</span></div>
+          <button class="view-btn" data-project="meraki">View project</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="slider-controls">
+      <button id="prev" aria-label="Previous project">←</button>
+      <button id="next" aria-label="Next project">→</button>
+    </div>
+  </div>
+</section>
+
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    <div class="modal-banner" id="modal-banner"></div>
+    <div class="modal-body">
+      <div class="modal-kicker" id="modal-kicker"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-summary"></p>
+      <h4>How it works</h4>
+      <ul id="modal-how"></ul>
+      <a class="modal-link" id="modal-link" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</div>
+
+<footer id="contact">
+  <div>Petrolina, PE, Brazil — Ikaro321santos@gmail.com — +55 (87) 98817-7172</div>
+  <div><a href="https://github.com/ikaro321santos-sys" target="_blank" rel="noopener">github.com/ikaro321santos-sys</a></div>
+</footer>
+
+<script>
+  const slider = document.getElementById('slider');
+  const cardWidth = () => slider.querySelector('.card').offsetWidth + 24;
+  document.getElementById('next').addEventListener('click', () => slider.scrollBy({left: cardWidth(), behavior:'smooth'}));
+  document.getElementById('prev').addEventListener('click', () => slider.scrollBy({left: -cardWidth(), behavior:'smooth'}));
+
+  const projects = {
+    ceramics: {
+      kicker: 'Landing Page', title: 'Barro & Sol', banner: 'banner-ceramics',
+      summary: 'A concept landing page for a fictional handmade ceramics store inspired by the São Francisco River valley, where I\'m from. The goal was to design a page that felt tied to a real place instead of a generic template.',
+      how: [
+        'Hero section introduces the brand story and a clear call to action.',
+        'A "How it\'s made" section explains the craft process in three real steps.',
+        'A product grid presents items with names and prices, styled like a small store.',
+        'Color palette (terracotta, indigo, sand) and serif display type were chosen to match the region\'s materials and light.'
+      ],
+      link: '#'
+    },
+    aria: {
+      kicker: 'AI Chatbot · Python', title: 'ARIA', banner: 'banner-aria',
+      summary: 'ARIA (Automated Response & Instruction Assistant) is a chatbot I keep building and improving to automate answers and support my own study routine in the ADS program.',
+      how: [
+        'Takes a text input and matches it against a set of intents and rules.',
+        'Generates a response based on the matched instruction or task.',
+        'Continuously expanded with new commands as I run into repetitive tasks.',
+        'Built entirely in Python, focused on practicing logic and automation.'
+      ],
+      link: 'https://github.com/ikaro321santos-sys'
+    },
+    rpg: {
+      kicker: 'Console App · C#', title: 'Console RPG', banner: 'banner-rpg',
+      summary: 'A text-based RPG that runs entirely in the terminal, built to practice game logic, state management, and control structures in C#.',
+      how: [
+        'Player stats (health, attack, inventory) are tracked as objects in memory.',
+        'A game loop reads player input each turn and updates the state.',
+        'Conditional and loop structures handle combat, choices, and outcomes.',
+        'Everything renders as formatted text directly in the console.'
+      ],
+      link: 'https://github.com/ikaro321santos-sys'
+    },
+    meraki: {
+      kicker: 'Web Prototype', title: 'Meraki RPG', banner: 'banner-meraki',
+      summary: 'A functional web interface prototype for an RPG platform, built to practice front-end logic beyond static pages.',
+      how: [
+        'A dice-rolling system generates randomized results with visual feedback.',
+        'Character sheets update dynamically as fields are filled in.',
+        'Built with vanilla HTML, CSS, and JavaScript — no frameworks.',
+        'Focused on DOM manipulation and structuring dynamic UI state.'
+      ],
+      link: 'https://github.com/ikaro321santos-sys'
+    }
+  };
+
+  const overlay = document.getElementById('overlay');
+  const modalBanner = document.getElementById('modal-banner');
+  const modalKicker = document.getElementById('modal-kicker');
+  const modalTitle = document.getElementById('modal-title');
+  const modalSummary = document.getElementById('modal-summary');
+  const modalHow = document.getElementById('modal-how');
+  const modalLink = document.getElementById('modal-link');
+
+  function openModal(key){
+    const p = projects[key];
+    if(!p) return;
+    modalBanner.className = 'modal-banner ' + p.banner;
+    modalKicker.textContent = p.kicker;
+    modalTitle.textContent = p.title;
+    modalSummary.textContent = p.summary;
+    modalHow.innerHTML = p.how.map(item => `<li>${item}</li>`).join('');
+    modalLink.href = p.link;
+    overlay.classList.add('open');
+  }
+
+  function closeModal(){
+    overlay.classList.remove('open');
+  }
+
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => openModal(btn.dataset.project));
+  });
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
